@@ -1,0 +1,24 @@
+{
+  "name": "mpq-file",
+  "version": "1.0.0",
+  "description": "Library for reading blizzard MPQ Archives",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ForsakenNGS/mpq-file.git"
+  },
+  "keywords": [
+    "blizzard",
+    "mpq",
+    "hots",
+    "heroes",
+    "of",
+    "the",
+    "storm"
+  ],
+  "author": "Jens N",
+  "license": "ISC"
+}
