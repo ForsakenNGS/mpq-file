@@ -1,3 +1,4 @@
+const MpqBuffer = require('./mpq-buffer.js');
 const MpqTools = require('./mpq-tools.js');
 
 class MpqStream {
@@ -95,7 +96,7 @@ class MpqStream {
             readTotal += read;
             offset += read;
         }
-        return result;
+        return new MpqBuffer(result);
     }
     readFile() {
         return this.read(0, this.entry.fileSize);
