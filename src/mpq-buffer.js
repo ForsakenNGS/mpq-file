@@ -20,6 +20,15 @@ class MpqBuffer {
     alignToByte() {
         this.nextBits = 0;
     }
+    alignOffset(offset) {
+        if (offset < 0) {
+            // Negative offset -> From end of buffer
+            return this.buffer.length + offset;
+        } else {
+            // Positive offset -> From 0
+            return offset;
+        }
+    }
 
     done() {
         return (this.nextBits === 0) && (this.used >= this.buffer.length);
@@ -27,6 +36,27 @@ class MpqBuffer {
 
     seekByte(offset) {
         this.used = offset;
+    }
+    seekToString(expected, consume, offset) {
+        if (typeof consume === "undefined") {
+            consume = false;
+        }
+        if (typeof offset === "undefined") {
+            offset = this.used;
+        }
+        this.alignToByte();
+        let posMax = this.buffer.length - expected.length;
+        for (let i = this.alignOffset(offset); i < posMax; i++) {
+            this.used = i;
+            let read = this.readBlob(expected.length).toString();
+            if (read === expected) {
+                if (!consume) {
+                    this.used -= expected.length;
+                }
+                return read;
+            }
+        }
+        throw new Error("Failed seeking to blob '"+expected+"'! Reached end of stream.");
     }
 
     readBits(bits) {
@@ -77,6 +107,14 @@ class MpqBuffer {
         let result = Buffer.from(this.buffer.buffer, this.buffer.byteOffset + this.used, length);
         this.used += length;
         return result;
+    }
+    readString() {
+        // Read null terminated string
+        let stringStart = this.used;
+        // Continue until zero terminator
+        while (this.readAlignedBytes(1) !== 0);
+        // Return string
+        return Buffer.from(this.buffer.buffer, this.buffer.byteOffset + stringStart, this.used - stringStart - 1).toString();
     }
 
     readVariableInt() {

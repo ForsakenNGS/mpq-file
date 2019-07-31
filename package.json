@@ -1,6 +1,6 @@
 {
   "name": "mpq-file",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Library for reading blizzard MPQ Archives",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,6 @@
   "author": "Jens N",
   "license": "ISC",
   "dependencies": {
-
+    "seek-bzip": "^1.0.5"
   }
 }
