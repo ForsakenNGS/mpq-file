@@ -37,21 +37,25 @@ class MpqBuffer {
     seekByte(offset) {
         this.used = offset;
     }
-    seekToString(expected, consume, offset) {
+    seekToString(expected, consume, encoding, offset) {
         if (typeof consume === "undefined") {
             consume = false;
+        }
+        if (typeof encoding === "undefined") {
+            encoding = 'utf8';
         }
         if (typeof offset === "undefined") {
             offset = this.used;
         }
         this.alignToByte();
-        let posMax = this.buffer.length - expected.length;
+        let expectedLength = Buffer.byteLength(expected, encoding);
+        let posMax = this.buffer.length - expectedLength;
         for (let i = this.alignOffset(offset); i < posMax; i++) {
             this.used = i;
-            let read = this.readBlob(expected.length).toString();
+            let read = this.readBlob(expectedLength).toString(encoding);
             if (read === expected) {
                 if (!consume) {
-                    this.used -= expected.length;
+                    this.used -= expectedLength;
                 }
                 return read;
             }
@@ -108,13 +112,16 @@ class MpqBuffer {
         this.used += length;
         return result;
     }
-    readString() {
+    readString(encoding) {
+        if (typeof encoding === "undefined") {
+            encoding = 'utf8';
+        }
         // Read null terminated string
         let stringStart = this.used;
         // Continue until zero terminator
         while (this.readAlignedBytes(1) !== 0);
         // Return string
-        return Buffer.from(this.buffer.buffer, this.buffer.byteOffset + stringStart, this.used - stringStart - 1).toString();
+        return Buffer.from(this.buffer.buffer, this.buffer.byteOffset + stringStart, this.used - stringStart - 1).toString(encoding);
     }
 
     readVariableInt() {
